@@ -15,7 +15,7 @@ import { useFormik } from "formik";
 import axios from "axios";
 
 const UserDashboard = (props, {user}) => {
-    const { loginWithRedirect } = useAuth0();
+    const { getAccessTokenSilently } = useAuth0();
     // const { user, isAuthenticated, isLoading } = useAuth0();
     console.log("*****", props.user.role[0] );
     const isAManager = props.user.role[0] === "Managers" ? true : false;
@@ -97,26 +97,29 @@ const UserDashboard = (props, {user}) => {
         msgContent: ""
     };
 
-    const onSubmit = (values) => {
-        console.log("message ---> ", values)
-        axios.post("https://localhost:8080/savemessage", values)
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-    }
+    const onSubmit = async (values) => {
+        let formdata = new FormData();
 
-    // useEffect(() => {
-    //   loginWithRedirect();
-    // })
+
+        try{
+            // const token = await getAccessTokenSilently();
+            await axios.post("https://localhost:443/ssd/savemessage", values)
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+        } catch (err) {
+            console.error(err);
+        }
+        console.log("message ---> ", values);
+    }
 
     const formik = useFormik({
         initialValues,
         onSubmit,
     });
-
     console.log('------23>', props.user);
 
 
